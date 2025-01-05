@@ -1,13 +1,10 @@
 using API.Extensions;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddApplicationServices(builder.Configuration);
-builder.Services.AddIdentityServices(builder.Configuration);
-
-
+builder.Services.AddApplicationServices(builder.Configuration); // Custom application services
+builder.Services.AddIdentityServices(builder.Configuration);    // Identity and authentication services
 
 // Configure Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -18,19 +15,20 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwagger(); // Enables Swagger in development
+    app.UseSwaggerUI(); // Enables the Swagger UI
 }
 
-app.UseHttpsRedirection();
-app.UseAuthorization();
-app.UseCors(x=> x.AllowAnyHeader().AllowAnyMethod()
-.WithOrigins("http://localhost:4200","https://localhost:4200"));
+// Middleware order matters
+app.UseHttpsRedirection(); // Redirect HTTP to HTTPS (should come early in the pipeline)
 
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
+app.UseCors(x => x.AllowAnyHeader()
+    .AllowAnyMethod()
+    .WithOrigins("http://localhost:4200", "https://localhost:4200")); // CORS middleware
 
+app.UseAuthentication(); // Auth middleware to validate tokens or credentials
+app.UseAuthorization();  // Checks access rights after authentication
 
+app.MapControllers(); // Maps controller endpoints to the pipeline
 
 app.Run();

@@ -1,0 +1,51 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="Offcanvas navbar large">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Dating App</a>
+
+        <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasNavbar2"
+            aria-labelledby="offcanvasNavbar2Label">
+
+            <div class="offcanvas-body">
+                @if (accountService.currentUser()) {
+                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                    <li class="nav-item">
+                        <a class="nav-link">Matches</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link">Lists</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link">Messages</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"  (click)="logout()">Logout</a>
+                    </li>
+
+                </ul>
+                }
+
+                @if(accountService.currentUser()){
+                    <div dropdown  class="dropdown">
+                        <a dropdownToggle  class="dropdown-toggle text-light">Welcome User</a>
+                        <div *dropdownMenu div class="dropdown-menu">
+                            <a  class="dropdown-item">Edit Profile</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" (click)="logout()">Logout</a>
+                        </div>
+                    </div>
+                }
+
+                @if(!accountService.currentUser()){
+                <form class="d-flex mt-3 mt-lg-0" #loginForm="ngForm" (ngSubmit)="login()" autocomplete="off">
+                    <input name="username" [(ngModel)]="model.username" class="form-control me-2"
+                        placeholder="Username">
+                    <input name="password" [(ngModel)]="model.password" class="form-control me-2" type="password"
+                        placeholder="Password">
+                    <button class="btn btn-outline-success" type="submit">Login</button>
+                </form>
+                }
+
+            </div>
+        </div>
+    </div>
+</nav>

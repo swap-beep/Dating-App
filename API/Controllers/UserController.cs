@@ -7,9 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-   [Authorize]
+    [Authorize]
     public class UserController : BaseApiController
     {
+
         private readonly DataContext _context;
 
         // Constructor to inject DataContext
@@ -17,20 +18,21 @@ namespace API.Controllers
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
-
+        [AllowAnonymous]
         // GET: api/User
         [HttpGet]
-        public async  Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
         {
             var users = await _context.Users.ToListAsync();  // Fetch users from database
             return users;  // Return the list of users
         }
 
         [HttpGet("{id:int}")]
-        public async Task <ActionResult<AppUser>> GetUser(int id){
+        public async Task<ActionResult<AppUser>> GetUser(int id)
+        {
 
             var user = await _context.Users.FindAsync(id);
-            if (user == null ) return NotFound();
+            if (user == null) return NotFound();
             return user;
         }
     }
