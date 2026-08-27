@@ -24,6 +24,8 @@ public required string City {get;set;}
 
 public required string Country{get ; set;}
 public List<Photo>  Photos{get ; set;} =[];
+public List<Like> LikedUsers { get; set; } = [];
+public List<Like> LikedByUsers { get; set; } = [];
 
 // public int GetAge(){
 //     return DateOfbirth.CalculateAge();

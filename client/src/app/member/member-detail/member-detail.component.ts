@@ -18,6 +18,14 @@ export class MemberDetailComponent implements OnInit {
   member?: Member;
   images: GalleryItem[]=[];
 
+  toggleLike() {
+    if (!this.member) return;
+    const request = this.member.isLiked
+      ? this.memberService.unlikeMember(this.member)
+      : this.memberService.likeMember(this.member);
+    request.subscribe(() => this.member = { ...this.member!, isLiked: !this.member!.isLiked });
+  }
+
   ngOnInit(): void {
     this.loadMember();
   }

@@ -18,7 +18,10 @@
               <a routerLink="/messages" routerLinkActive="active" class="nav-link">Messages</a>
             </li>
             <!-- DROPDOWN -->
+             <img src="{{accountService.currentUser()?.photoUrl || './assets/user.png'}}"
+               alt="user main image">
             <li class="nav-item dropdown me-3" dropdown>
+              
               <a dropdownToggle class="dropdown-toggle nav-link text-light">Welcome {{accountService.currentUser()?.username | titlecase}}</a>
               <div *dropdownMenu class="dropdown-menu">
                 <a class="dropdown-item" routerLink="/member/edit">Edit Profile</a>

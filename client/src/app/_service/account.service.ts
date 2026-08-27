@@ -17,8 +17,7 @@ login(model:any){
   return this.http.post<User>(this.baseurl + 'account/login' , model).pipe(
     map( user => {
       if (user){
-        localStorage.setItem('user' , JSON.stringify(user));
-        this.currentUser.set(user);
+       this.setCurrentUser(user);
       }
     })
   )
@@ -34,12 +33,35 @@ register(model:any){
   return this.http.post<User>(this.baseurl + 'account/register' , model).pipe(
     map( user => {
       if (user){
-        localStorage.setItem('user' , JSON.stringify(user));
-        this.currentUser.set(user);
+        this.setCurrentUser(user);
       }
       return user;
     })
   )
+}
+
+isAuthenticated(): boolean {
+  const user = this.currentUser();
+  if (!user || this.isTokenExpired(user.token)) {
+    if (user) this.logout();
+    return false;
+  }
+  return true;
+}
+
+private isTokenExpired(token: string): boolean {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return typeof payload.exp !== 'number' || payload.exp * 1000 <= Date.now();
+  } catch {
+    return true;
+  }
+}
+
+setCurrentUser(user:User){
+
+  localStorage.setItem('user',JSON.stringify(user));
+  this.currentUser.set(user);
 }
  
 logout(){

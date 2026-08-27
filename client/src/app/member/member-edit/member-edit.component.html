@@ -6,11 +6,11 @@
     </div>
     <div class="col-8">
         @if(editForm.dirty){
-            <div class="alert alert-info pb-0">
-                <p>Information: <strong>
-                        You have made changes. Any unsaved changes will be lost.</strong></p>
-            </div>
-        }      
+        <div class="alert alert-info pb-0">
+            <p>Information: <strong>
+                    You have made changes. Any unsaved changes will be lost.</strong></p>
+        </div>
+        }
     </div>
     <div class="col-4">
         <div class="card">
@@ -40,9 +40,7 @@
             </div>
             <div class="card-footer">
 
-                <button 
-                [disabled]="!editForm.dirty"
-                form="editForm" clas="btn btn-success col-12">
+                <button [disabled]="!editForm.dirty" form="editForm" clas="btn btn-success col-12">
                     Save Changes
                 </button>
 
@@ -74,7 +72,10 @@
 
             </tab>
             <tab heading="Edit Photos">
-
+                <app-photo-editor [member]="member"
+                (memberChange)="onMemberChange($event)"
+                
+                ></app-photo-editor>
             </tab>
 
         </tabset>

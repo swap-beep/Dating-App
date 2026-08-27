@@ -7,7 +7,7 @@ export const authGuard: CanActivateFn = (route, state) => {
 const accountService = inject(AccountService)
 const toastr = inject(ToastrService)
 
-if(accountService.currentUser()){
+if(accountService.isAuthenticated()){
   return true;
 }else{
 toastr.error('Your are not authorized');

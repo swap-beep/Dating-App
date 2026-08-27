@@ -15,5 +15,6 @@ export interface Member {
     country: string
     photos: Photo[]
     KnownAs: string
+    isLiked?: boolean
   }
   

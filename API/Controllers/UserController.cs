@@ -15,7 +15,7 @@ namespace API.Controllers
 {
     [Authorize]
     public class UserController(IUserRepository userRepository, IMapper mapper,
-    IPhotoService photoService) : BaseApiController
+    IPhotoService photoService, DataContext context) : BaseApiController
     {
         // GET: api/User
         [HttpGet]
@@ -37,6 +37,58 @@ namespace API.Controllers
 
 
             return (user);
+        }
+
+        [HttpGet("likes")]
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetLikedUsers()
+        {
+            var username = User.GetUsername();
+            var user = await context.Users.SingleOrDefaultAsync(x => x.UserName == username);
+            if (user == null) return Unauthorized();
+
+            var likedTargetIds = context.Likes
+                .Where(like => like.SourceUserId == user.Id)
+                .Select(like => like.TargetUserId);
+
+            var likedUsers = await context.Users
+                .Include(target => target.Photos)
+                .Where(target => likedTargetIds.Contains(target.Id))
+                .ToListAsync();
+
+            return Ok(mapper.Map<IEnumerable<MemberDto>>(likedUsers));
+        }
+
+        [HttpPost("{username}/like")]
+        public async Task<ActionResult> LikeUser(string username)
+        {
+            var source = await context.Users.SingleOrDefaultAsync(x => x.UserName == User.GetUsername());
+            var target = await context.Users.SingleOrDefaultAsync(x => x.UserName == username.ToLower());
+            if (source == null || target == null) return NotFound();
+            if (source.Id == target.Id) return BadRequest("You cannot like yourself");
+
+            var likeExists = await context.Likes.AnyAsync(like =>
+                like.SourceUserId == source.Id && like.TargetUserId == target.Id);
+            if (likeExists) return NoContent();
+
+            context.Likes.Add(new Like { SourceUserId = source.Id, TargetUserId = target.Id });
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpDelete("{username}/like")]
+        public async Task<ActionResult> UnlikeUser(string username)
+        {
+            var source = await context.Users.SingleOrDefaultAsync(x => x.UserName == User.GetUsername());
+            var target = await context.Users.SingleOrDefaultAsync(x => x.UserName == username.ToLower());
+            if (source == null || target == null) return NotFound();
+
+            var like = await context.Likes.SingleOrDefaultAsync(item =>
+                item.SourceUserId == source.Id && item.TargetUserId == target.Id);
+            if (like == null) return NoContent();
+
+            context.Likes.Remove(like);
+            await context.SaveChangesAsync();
+            return NoContent();
         }
 
 
@@ -66,8 +118,50 @@ namespace API.Controllers
                 PublicId = result.PublicId
             };
             user.Photos.Add(photo);
-            if (await userRepository.SaveAllAsync()) return mapper.Map<PhotoDto>(photo);
+            if (await userRepository.SaveAllAsync())
+                return CreatedAtAction(nameof(GetUser),
+                new { username = user.UserName }, mapper.Map<PhotoDto>(photo));
             return BadRequest("Problem adding Photo");
+        }
+
+        [HttpPut("set-main-photo/{photoId:int}")]
+        public async Task<ActionResult> SetMainPhoto(int photoId)
+        {
+
+            var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
+            if (user == null) return BadRequest("could not find user");
+            var photo = user.Photos.FirstOrDefault(x => x.Id == photoId);
+            if (photo == null || photo.IsMain) return BadRequest("cannot use this as main photo");
+            var currentMain = user.Photos.FirstOrDefault(x => x.IsMain);
+            if (currentMain != null) currentMain.IsMain = false;
+            photo.IsMain = true;
+
+            if (await userRepository.SaveAllAsync()) return NoContent();
+
+            return BadRequest("Problem setting main photo");
+        }
+
+
+        [HttpDelete("delete-photo/{photoId:int}")]
+        public async Task<ActionResult> DeletePhoto(int photoId)
+        {
+            var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
+            if (user == null) return BadRequest("User not found");
+
+            var photo = user.Photos.FirstOrDefault(x => x.Id == photoId);
+            if (photo == null || photo.IsMain) return BadRequest("This photo can not be deleted");
+
+            if (photo.PublicId != null)
+            {
+                var result = await photoService.DeletePhotoAsync(photo.PublicId);
+                if (result.Error != null) return BadRequest(result.Error.Message);
+            }
+
+            user.Photos.Remove(photo);
+
+            if (await userRepository.SaveAllAsync()) return Ok();
+
+            return BadRequest("Problem deleting photo");
         }
 
     }

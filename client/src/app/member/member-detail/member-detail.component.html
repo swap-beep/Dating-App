@@ -28,8 +28,9 @@
             </div>
             <div class="card-footer">
                 <div class="btn-group d-flex">
-                    <button clas="btn btn-primary">
-                        Like
+                    <button class="btn btn-primary" type="button" (click)="toggleLike()">
+                        <i class="fa" [class.fa-heart]="member.isLiked" [class.fa-heart-o]="!member.isLiked"></i>
+                        {{member.isLiked ? 'Unlike' : 'Like'}}
                     </button>
                     <button clas="btn btn-success">
                         Message

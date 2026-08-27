@@ -6,7 +6,9 @@
             <button routerLink="/members/{{member().userName}}" class="btn btn-primary"><i class="fa fa-user"></i> </button>
         </li>
         <li class="list-inline-item">
-            <button class="btn btn-primary"><i class="fa fa-heart"></i> </button>
+            <button class="btn btn-primary" type="button" (click)="toggleLike()" [attr.aria-label]="member().isLiked ? 'Unlike ' + member().userName : 'Like ' + member().userName">
+                <i class="fa" [class.fa-heart]="member().isLiked" [class.fa-heart-o]="!member().isLiked"></i>
+            </button>
         </li>
         <li class="list-inline-item">
             <button class="btn btn-primary"><i class="fa fa-envelope"></i> </button>
