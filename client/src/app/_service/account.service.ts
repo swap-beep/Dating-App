@@ -2,6 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../_models/user';
 import { map } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ import { map } from 'rxjs';
 export class AccountService {
 private http = inject (HttpClient);
 
-baseurl = 'https://localhost:5001/';
+baseurl = environment.apiUrl;
 currentUser = signal<User | null>(null);
 
 login(model:any){
@@ -22,6 +23,13 @@ login(model:any){
     })
   )
 }
+constructor() {
+  const userJson = localStorage.getItem('user');
+  if (userJson) {
+    this.currentUser.set(JSON.parse(userJson));
+  }
+}
+
 register(model:any){
   return this.http.post<User>(this.baseurl + 'account/register' , model).pipe(
     map( user => {

@@ -1,6 +1,12 @@
 using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
+using System.Security.Claims;
 using API.Data;
+using API.DTOs;
 using API.Entities;
+using API.Extensions;
+using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,32 +14,61 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers
 {
     [Authorize]
-    public class UserController : BaseApiController
+    public class UserController(IUserRepository userRepository, IMapper mapper,
+    IPhotoService photoService) : BaseApiController
     {
-
-        private readonly DataContext _context;
-
-        // Constructor to inject DataContext
-        public UserController(DataContext context)
-        {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-        }
-        [AllowAnonymous]
         // GET: api/User
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
         {
-            var users = await _context.Users.ToListAsync();  // Fetch users from database
-            return users;  // Return the list of users
+            var users = await userRepository.GetMemberAsync(); // Fetch users from database
+                                                               // var usersToReturn = mapper.Map<IEnumerable<MemberDto>>(users);
+
+            return Ok(users);  // Return the list of users
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult<AppUser>> GetUser(int id)
+        [HttpGet("{username}")]
+        public async Task<ActionResult<MemberDto>> GetUser(string username)
         {
 
-            var user = await _context.Users.FindAsync(id);
+            var user = await userRepository.GetMemberAsync(username);
             if (user == null) return NotFound();
-            return user;
+
+
+
+            return (user);
         }
+
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateUser(MemberUpdateDto memberUpdateDto)
+        {
+
+            var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
+            if (user == null) return BadRequest("Could not find user");
+            mapper.Map(memberUpdateDto, user);
+            if (await userRepository.SaveAllAsync()) return NoContent();
+            return BadRequest("Failed t update user");
+
+        }
+
+        [HttpPost("add-photo")]
+        public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file)
+        {
+            var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
+            if (user == null) return BadRequest("cannot update user");
+            var result = await photoService.AddPhotoAsync(file);
+            if (result.Error != null) return BadRequest(result.Error.Message);
+
+            var photo = new Photo
+            {
+                Url = result.SecureUrl.AbsoluteUri,
+                PublicId = result.PublicId
+            };
+            user.Photos.Add(photo);
+            if (await userRepository.SaveAllAsync()) return mapper.Map<PhotoDto>(photo);
+            return BadRequest("Problem adding Photo");
+        }
+
     }
 }

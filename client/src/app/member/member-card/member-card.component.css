@@ -1,0 +1,51 @@
+.card:hover img{
+    transform: scale(1.2,1.2);
+    transition-duration: 500ms;
+    transition-timing-function: ease-out;
+}
+
+.card img{
+    transform: scale(1.0,1.0);
+    transition-duration: 500ms;
+    transition-timing-function: ease-out;   
+}
+
+.card-img-wrapper{
+    overflow:hidden;
+    position:relative;
+}
+/* 🔽 Updated styles start here */
+/* absolute */
+.member-icons {
+    position: relative;  
+    bottom: -30px;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.card-img-wrapper:hover .member-icons {
+    bottom: 10px;
+    opacity: 1;
+}
+
+/* 🔽 Reduce button size */
+.member-icons .btn {
+    padding: 4px 8px;
+    font-size: 12px;
+    margin: 0 2px;
+}
+
+/* Optional: scale icons inside slightly smaller too */
+.member-icons .fa {
+    font-size: 14px;
+}
+.member-icons .btn:active {
+    background-color: red !important;
+    border-color: red !important;
+  }
+  
