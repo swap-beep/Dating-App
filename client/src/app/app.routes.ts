@@ -9,9 +9,11 @@ import { NotFoundComponent } from './errors/not-found/not-found.component';
 import { ServerErrorComponent } from './errors/server-error/server-error.component';
 import { MemberEditComponent } from './member/member-edit/member-edit.component';
 import { preventUnsavedChangesGuard } from './guards/prevent-unsaved-changes.guard';
+import { LearnMoreComponent } from './learn-more/learn-more.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
+    { path: 'learn-more', component: LearnMoreComponent },
     {
         path: '',
         runGuardsAndResolvers: 'always',

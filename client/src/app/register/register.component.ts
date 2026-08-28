@@ -2,6 +2,7 @@ import { Component, inject, OnInit, output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { AccountService } from '../_service/account.service';
 import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -15,6 +16,7 @@ export class RegisterComponent implements OnInit {
 //userFromHomeComponent = input.required<any>();
 // @Output() cancelRegister = new EventEmitter();
 private toastr = inject(ToastrService)
+private router = inject(Router)
 cancelRegister = output<boolean>();
 model :any = {}
 protected registerForm : FormGroup=new FormGroup({});
@@ -26,8 +28,8 @@ protected registerForm : FormGroup=new FormGroup({});
   initializeForm(){
     this.registerForm = new FormGroup({
 
-username: new FormControl('' , Validators.required),
-password: new FormControl('',[Validators.required , Validators.minLength(5),Validators.maxLength(10)]),
+username: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]),
+password: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]),
 confirmPassword: new FormControl('',[Validators.required ,this.matchValues('password')])
     }) ;
   this.registerForm.controls['password'].valueChanges.subscribe(()=>
@@ -55,7 +57,11 @@ register(){
   if (this.registerForm.invalid) return;
 
   this.accountService.register(this.registerForm.value).subscribe({
-    next: () => this.cancelRegister.emit(false),
+    next: () => {
+      this.toastr.success('Registration successful. You can now log in.');
+      this.cancelRegister.emit(false);
+      this.router.navigateByUrl('/');
+    },
     error: error => this.toastr.error(error.error)
   });
 }

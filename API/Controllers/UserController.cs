@@ -10,6 +10,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using CloudinaryDotNet.Actions;
 
 namespace API.Controllers
 {
@@ -107,9 +108,22 @@ namespace API.Controllers
         [HttpPost("add-photo")]
         public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file)
         {
+            if (file == null || file.Length == 0) return BadRequest("Please select an image to upload");
+            if (!file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+                return BadRequest("Only image files are supported");
+            if (file.Length > 10 * 1024 * 1024) return BadRequest("Image must be smaller than 10 MB");
+
             var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
             if (user == null) return BadRequest("cannot update user");
-            var result = await photoService.AddPhotoAsync(file);
+            ImageUploadResult result;
+            try
+            {
+                result = await photoService.AddPhotoAsync(file);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Photo storage is unavailable. Check the Cloudinary configuration.");
+            }
             if (result.Error != null) return BadRequest(result.Error.Message);
 
             var photo = new Photo

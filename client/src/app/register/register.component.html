@@ -9,6 +9,9 @@
         placeholder="username">
         <label>Username</label>
     </div>
+    @if (registerForm.controls['username'].invalid && registerForm.controls['username'].touched) {
+        <div class="text-danger small mb-2">Username must be between 3 and 30 characters.</div>
+    }
     
 
     <div class="mb-3 form-floating">
@@ -19,6 +22,9 @@
         placeholder="password">
         <label>Password</label>
     </div>
+    @if (registerForm.controls['password'].invalid && registerForm.controls['password'].touched) {
+        <div class="text-danger small mb-2">Password must be between 5 and 100 characters.</div>
+    }
     <div class="mb-3 form-floating">
         <input type="password"
         class="form-control"
@@ -27,6 +33,9 @@
         placeholder="Confirm password">
         <label>Confirm Password</label>
     </div>
+    @if (registerForm.controls['confirmPassword'].hasError('passwordMismatch') && registerForm.controls['confirmPassword'].touched) {
+        <div class="text-danger small mb-2">Passwords do not match.</div>
+    }
     <div class="form-group text-center">
         <button  [disabled]="!registerForm.valid" class="btn btn-success me-2" type="submit">Register</button>
         <button class="btn btn-default me-2" type ="button" (click)="cancel()">Cancel</button>

@@ -1,16 +1,18 @@
 .img-thumbnail{
-    margin:20px;
-    width:85%;
-    height: 85%;
+    display: block;
+    width: 100%;
+    max-height: 390px;
+    margin: 0 auto;
+    object-fit: cover;
 }
 
 .card-body{
-    padding:0 25px;
+    padding: 1rem 1.25rem;
 
 }
 
 .card-footer{
-    padding: 10px 15px;
+    padding: 0.75rem 1.25rem;
     background-color:#fff;
     border-top: none;
 }

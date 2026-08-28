@@ -30,14 +30,7 @@ constructor() {
 }
 
 register(model:any){
-  return this.http.post<User>(this.baseurl + 'account/register' , model).pipe(
-    map( user => {
-      if (user){
-        this.setCurrentUser(user);
-      }
-      return user;
-    })
-  )
+  return this.http.post<User>(this.baseurl + 'account/register' , model);
 }
 
 isAuthenticated(): boolean {

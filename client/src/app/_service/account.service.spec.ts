@@ -36,13 +36,14 @@ describe('AccountService', () => {
     expect(JSON.parse(localStorage.getItem('user')!)).toEqual(user);
   });
 
-  it('registers and stores the returned user', () => {
+  it('registers without automatically authenticating the user', () => {
     const user = { username: 'alice', token: tokenWithExpiry(Date.now() / 1000 + 3600) };
 
     service.register({ username: 'alice', password: 'secret' }).subscribe();
     http.expectOne('/account/register').flush(user);
 
-    expect(service.currentUser()).toEqual(user);
+    expect(service.currentUser()).toBeNull();
+    expect(localStorage.getItem('user')).toBeNull();
   });
 
   it('rejects expired tokens and clears the session', () => {

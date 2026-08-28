@@ -19,6 +19,7 @@ export class PhotoEditorComponent implements OnInit{
 member = input.required<Member>();
 uploader?: FileUploader;
 hasBaseDropZoneOver = false;
+uploadError?: string;
 baseUrl = environment.apiUrl;
 memberChange = output<Member>();
 
@@ -73,14 +74,36 @@ initializeUploader(){
     autoUpload: false,
     maxFileSize: 10*1024*1024 
   })
+this.uploader.onBeforeUploadItem = () => {
+  const token = this.accountService.currentUser()?.token;
+  if (token) this.uploader!.authToken = 'Bearer ' + token;
+  this.uploadError = undefined;
+}
 this.uploader.onAfterAddingFile = (file) =>{
   file.withCredentials=false
+}
+this.uploader.onWhenAddingFileFailed = (item, filter) => {
+  if (filter.name === 'fileSize') {
+    this.uploadError = 'Photo is too large. Please choose an image smaller than 10 MB.';
+  } else if (filter.name === 'fileType') {
+    this.uploadError = 'Only image files can be uploaded.';
+  } else {
+    this.uploadError = 'This photo cannot be added to the upload queue.';
+  }
 }
 this.uploader.onSuccessItem = (item,response,status,header)=>{
   const photo = JSON.parse(response);
   const updateMember = {...this.member()}
   updateMember.photos.push(photo);
   this.memberChange.emit(updateMember);
+}
+this.uploader.onErrorItem = (item, response) => {
+  try {
+    const error = JSON.parse(response);
+    this.uploadError = error.title || error.message || error;
+  } catch {
+    this.uploadError = response || 'Photo upload failed';
+  }
 }
 }
 trackByPhotoId(index: number, photo: Photo): number {
