@@ -1,4 +1,5 @@
  using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using API.Extensions;
 
 namespace API.Entities;
@@ -26,6 +27,15 @@ public required string Country{get ; set;}
 public List<Photo>  Photos{get ; set;} =[];
 public List<Like> LikedUsers { get; set; } = [];
 public List<Like> LikedByUsers { get; set; } = [];
+
+[InverseProperty(nameof(Message.Sender))]
+public List<Message> SentMessages { get; set; } = [];
+
+[InverseProperty(nameof(Message.Recipient))]
+public List<Message> ReceivedMessages { get; set; } = [];
+
+[InverseProperty(nameof(Notification.User))]
+public List<Notification> Notifications { get; set; } = [];
 
 // public int GetAge(){
 //     return DateOfbirth.CalculateAge();

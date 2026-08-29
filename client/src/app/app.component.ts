@@ -5,6 +5,7 @@ import { NavComponent } from './nav/nav.component';
 import { AccountService } from './_service/account.service';
 import { HomeComponent } from "./home/home.component";
 import { NgxSpinner, NgxSpinnerComponent } from 'ngx-spinner';
+import { SignalrNotificationService } from './_service/signalr-notification.service';
 
 @Component({
   selector: 'app-root',
@@ -16,10 +17,11 @@ import { NgxSpinner, NgxSpinnerComponent } from 'ngx-spinner';
 export class AppComponent implements OnInit {
  
   accountService = inject(AccountService);
+  private signalrNotificationService = inject(SignalrNotificationService);
   
   ngOnInit(): void {
-    
     this.setCurrentUser();
+    this.signalrNotificationService.startConnection();
   }
 
   setCurrentUser() {

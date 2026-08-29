@@ -16,5 +16,6 @@ export interface Member {
     photos: Photo[]
     KnownAs: string
     isLiked?: boolean
+    isMatch?: boolean
   }
   

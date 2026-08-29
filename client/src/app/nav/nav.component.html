@@ -17,11 +17,28 @@
             <li class="nav-item me-3">
               <a routerLink="/messages" routerLinkActive="active" class="nav-link">Messages</a>
             </li>
-            <!-- DROPDOWN -->
-             <img src="{{accountService.currentUser()?.photoUrl || './assets/user.png'}}"
-               alt="user main image">
+            <li class="nav-item me-3">
+              <a routerLink="/notifications" routerLinkActive="active" class="nav-link">Notifications</a>
+            </li>
+
             <li class="nav-item dropdown me-3" dropdown>
-              
+              <a dropdownToggle class="nav-link text-light position-relative" role="button">
+                <i class="fa fa-bell"></i>
+                <span *ngIf="unreadCount() > 0" class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">
+                  {{ unreadCount() }}
+                </span>
+              </a>
+              <div *dropdownMenu class="dropdown-menu dropdown-menu-end" style="min-width: 260px;">
+                <div *ngIf="notifications().length === 0" class="dropdown-item text-muted">No notifications</div>
+                <div *ngFor="let notification of notifications()" class="dropdown-item">
+                  <div class="small text-uppercase text-muted fw-bold">{{ notification.type }}</div>
+                  <div>{{ notification.message }}</div>
+                </div>
+              </div>
+            </li>
+
+            <img src="{{accountService.currentUser()?.photoUrl || './assets/user.png'}}" alt="user main image" style="max-width: 36px; max-height: 36px; border-radius: 50%; margin-right: 10px;">
+            <li class="nav-item dropdown me-3" dropdown>
               <a dropdownToggle class="dropdown-toggle nav-link text-light">Welcome {{accountService.currentUser()?.username | titlecase}}</a>
               <div *dropdownMenu class="dropdown-menu">
                 <a class="dropdown-item" routerLink="/member/edit">Edit Profile</a>

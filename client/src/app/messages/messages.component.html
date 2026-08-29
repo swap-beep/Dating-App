@@ -1,1 +1,86 @@
-<p>messages works!</p>
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          Matches
+        </div>
+        <div class="list-group list-group-flush">
+          @if (matches().length === 0) {
+            <div class="list-group-item text-muted">
+              You don't have any matches yet. Like someone back to unlock messaging.
+            </div>
+          } @else {
+            @for (match of matches(); track match.userName) {
+              <button
+                type="button"
+                class="list-group-item list-group-item-action"
+                [class.active]="selectedUsername === match.userName"
+                (click)="selectMatch(match)"
+              >
+                <div class="d-flex align-items-center gap-2">
+                  <img
+                    [src]="match.photoUrl || 'https://via.placeholder.com/32'"
+                    [alt]="match.userName"
+                    class="rounded-circle"
+                    width="32"
+                    height="32"
+                  >
+                  <span>{{ match.userName }}</span>
+                </div>
+              </button>
+            }
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      @if (!selectedUsername) {
+        <div class="card h-100">
+          <div class="card-body d-flex align-items-center justify-content-center text-muted">
+            Select a match to start messaging.
+          </div>
+        </div>
+      } @else {
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            Chat with {{ selectedUsername }}
+          </div>
+
+          <div class="card-body d-flex flex-column" style="height: 420px; overflow-y: auto;">
+            @if (messages().length === 0) {
+              <div class="text-muted text-center mt-4">No messages yet. Say hi!</div>
+            } @else {
+              @for (message of messages(); track message.id) {
+                <div class="mb-3">
+                  <div class="small text-muted">
+                    {{ message.senderUsername }} • {{ message.createdAt | date:'shortTime' }}
+                  </div>
+                  <div class="p-2 rounded" [class.bg-primary]="message.senderUsername !== selectedUsername" [class.bg-light]="message.senderUsername === selectedUsername" [class.text-white]="message.senderUsername !== selectedUsername">
+                    {{ message.content }}
+                  </div>
+                </div>
+              }
+            }
+          </div>
+
+          <div class="card-footer">
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="newMessage"
+                placeholder="Type a message..."
+                (keydown.enter)="sendMessage()"
+              >
+              <button class="btn btn-primary" type="button" (click)="sendMessage()" [disabled]="!newMessage.trim()">
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

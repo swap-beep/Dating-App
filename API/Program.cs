@@ -1,5 +1,6 @@
 using API.Data;
 using API.Extensions;
+using API.Hubs;
 using API.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -9,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddApplicationServices(builder.Configuration); // Custom application services
 builder.Services.AddIdentityServices(builder.Configuration);    // Identity and authentication services
+builder.Services.AddSignalR();
 
 // Configure Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -54,7 +56,11 @@ if (app.Environment.IsDevelopment())
 }
 
 // Middleware order matters
-app.UseHttpsRedirection(); // Redirect HTTP to HTTPS (should come early in the pipeline)
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors(x => x.AllowAnyHeader()
     .AllowAnyMethod()
@@ -63,6 +69,7 @@ app.UseCors(x => x.AllowAnyHeader()
 app.UseAuthentication(); // Auth middleware to validate tokens or credentials
 app.UseAuthorization();  // Checks access rights after authentication
 
+app.MapHub<NotificationHub>("/hubs/notifications");
 app.MapControllers(); // Maps controller endpoints to the pipeline
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;

@@ -1,0 +1,8 @@
+.notifications-container {
+  max-width: 900px;
+}
+
+.list-group-item {
+  border-left: none;
+  border-right: none;
+}

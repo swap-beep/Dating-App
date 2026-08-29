@@ -1,6 +1,7 @@
 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { environment } from '../../environments/environment';
 import { Member } from '../_models/Member';
 import { of, tap } from 'rxjs';
@@ -13,6 +14,7 @@ import { Photo } from '../_models/Photo';
 export class MembersService {
 
   private http = inject(HttpClient);
+  private toastr = inject(ToastrService);
 
   baseUrl = environment.apiUrl;
   members = signal<Member[]>([]);
@@ -35,10 +37,16 @@ export class MembersService {
   }
 
   likeMember(member: Member) {
-    return this.http.post(this.baseUrl + 'user/' + member.userName + '/like', {}).pipe(
-      tap(() => {
+    return this.http.post<{ matched: boolean; message: string }>(this.baseUrl + 'user/' + member.userName + '/like', {}).pipe(
+      tap(response => {
+        if (response.matched) {
+          this.toastr.success(response.message || `It's a match with ${member.userName}!`);
+        } else {
+          this.toastr.info(response.message || `You liked ${member.userName}.`);
+        }
+
         this.members.update(members => members.map(item =>
-          item.userName === member.userName ? { ...item, isLiked: true } : item));
+          item.userName === member.userName ? { ...item, isLiked: true, isMatch: response.matched } : item));
       })
     );
   }

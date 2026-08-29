@@ -11,10 +11,11 @@
             </button>
         </li>
         <li class="list-inline-item">
-            <button class="btn btn-primary"><i class="fa fa-envelope"></i> </button>
+            <button class="btn btn-primary" type="button" [disabled]="!member().isMatch" (click)="openMessages()">
+                <i class="fa fa-envelope"></i>
+            </button>
         </li>
     </ul>
-    
     </div>
 <div class="card-body p-1">
     <h6 class="card-title text-center mb-1">
@@ -23,7 +24,12 @@
 </i>
 {{member().userName}}
     </h6>
-    <p class="card-text text-muted" text-center>{{member().city}}</p>
+    <p class="card-text text-muted text-center mb-1">
+      {{member().city}}
+    </p>
+    @if (member().isMatch) {
+      <p class="text-success small text-center mb-0">Matched</p>
+    }
 </div>
 
 </div>

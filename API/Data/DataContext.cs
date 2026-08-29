@@ -7,26 +7,45 @@ namespace API.Data;
 
 public class DataContext(DbContextOptions options) : DbContext(options)
 {
-public required DbSet<AppUser> Users {get;set;}
-public DbSet<Like> Likes { get; set; }
+    public required DbSet<AppUser> Users { get; set; }
+    public DbSet<Like> Likes { get; set; }
+    public DbSet<Message> Messages { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
 
-protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
-    modelBuilder.Entity<Like>()
-        .HasKey(like => new { like.SourceUserId, like.TargetUserId });
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Like>()
+            .HasKey(like => new { like.SourceUserId, like.TargetUserId });
 
-    modelBuilder.Entity<Like>()
-        .HasOne(like => like.SourceUser)
-        .WithMany(user => user.LikedUsers)
-        .HasForeignKey(like => like.SourceUserId)
-        .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Like>()
+            .HasOne(like => like.SourceUser)
+            .WithMany(user => user.LikedUsers)
+            .HasForeignKey(like => like.SourceUserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-    modelBuilder.Entity<Like>()
-        .HasOne(like => like.TargetUser)
-        .WithMany(user => user.LikedByUsers)
-        .HasForeignKey(like => like.TargetUserId)
-        .OnDelete(DeleteBehavior.Restrict);
-}
+        modelBuilder.Entity<Like>()
+            .HasOne(like => like.TargetUser)
+            .WithMany(user => user.LikedByUsers)
+            .HasForeignKey(like => like.TargetUserId)
+            .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<Message>()
+            .HasOne(message => message.Sender)
+            .WithMany(user => user.SentMessages)
+            .HasForeignKey(message => message.SenderUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Message>()
+            .HasOne(message => message.Recipient)
+            .WithMany(user => user.ReceivedMessages)
+            .HasForeignKey(message => message.RecipientUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Notification>()
+            .HasOne(notification => notification.User)
+            .WithMany(user => user.Notifications)
+            .HasForeignKey(notification => notification.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
+}
 
