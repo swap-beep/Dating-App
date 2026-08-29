@@ -1,0 +1,81 @@
+.card {
+    height: 100%;
+    overflow: hidden;
+}
+
+.card:hover img{
+    transform: scale(1.2,1.2);
+    transition-duration: 500ms;
+    transition-timing-function: ease-out;
+}
+
+.card img{
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    transform: scale(1.0,1.0);
+    transition-duration: 500ms;
+    transition-timing-function: ease-out;   
+}
+
+.card-img-wrapper{
+    overflow:hidden;
+    position:relative;
+}
+/* 🔽 Updated styles start here */
+/* absolute */
+.member-icons {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    padding: 0;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.card-img-wrapper:hover .member-icons {
+    opacity: 1;
+}
+
+.card-body {
+    min-height: 58px;
+    padding: .45rem .35rem .35rem;
+}
+
+.card-title {
+    font-size: .85rem;
+}
+
+.card-text {
+    margin-bottom: 0;
+    font-size: .75rem;
+}
+
+/* 🔽 Reduce button size */
+.member-icons .btn {
+    padding: 4px 8px;
+    font-size: 12px;
+    margin: 0 2px;
+}
+
+/* Optional: scale icons inside slightly smaller too */
+.member-icons .fa {
+    font-size: 14px;
+}
+.member-icons .btn:active {
+    background-color: red !important;
+    border-color: red !important;
+  }
+
+@media (hover: none) {
+    .member-icons {
+        bottom: 10px;
+        opacity: 1;
+    }
+}
+  

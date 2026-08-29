@@ -1,0 +1,29 @@
+<div class="card mb-4">
+    <div class="card-img-wrapper">
+        <img src="{{member().photoUrl}}" alt="{{member().KnownAs}}" class="card-img-top">
+    <ul class="member-icons list-inline">
+        <li class="list-inline-item">
+            <button routerLink="/members/{{member().userName}}" class="btn btn-primary"><i class="fa fa-user"></i> </button>
+        </li>
+        <li class="list-inline-item">
+            <button class="btn btn-primary" type="button" (click)="toggleLike()" [attr.aria-label]="member().isLiked ? 'Unlike ' + member().userName : 'Like ' + member().userName">
+                <i class="fa" [class.fa-heart]="member().isLiked" [class.fa-heart-o]="!member().isLiked"></i>
+            </button>
+        </li>
+        <li class="list-inline-item">
+            <button class="btn btn-primary"><i class="fa fa-envelope"></i> </button>
+        </li>
+    </ul>
+    
+    </div>
+<div class="card-body p-1">
+    <h6 class="card-title text-center mb-1">
+<i class="fa fa-user me-2">
+
+</i>
+{{member().userName}}
+    </h6>
+    <p class="card-text text-muted" text-center>{{member().city}}</p>
+</div>
+
+</div>
